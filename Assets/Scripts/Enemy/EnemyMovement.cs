@@ -4,15 +4,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Animator))]
 public class EnemyMovement : MonoBehaviour
 {
     [SerializeField] private EnemyProperties _ep;
 
     private Rigidbody2D _body;
     private Transform plrTrans;
+
+    private Animator m_Animator;
     
-    [SerializeField] private enemyStatus EnemyStatus = enemyStatus.Idle;
-    enum enemyStatus
+    [SerializeField] private EnemyStatus enemyStatus = EnemyStatus.Patrol;
+    enum EnemyStatus
     {
         Idle,
         Patrol,
@@ -21,10 +24,11 @@ public class EnemyMovement : MonoBehaviour
     }
     private void Awake()
     {
-        if (gameObject != null)
+        if (gameObject.activeSelf)
         {
+            m_Animator = GetComponent<Animator>();
             _body = GetComponent<Rigidbody2D>();
-            plrTrans = GameManager.plrTrans;
+            plrTrans = GameManager.plrTrans;    
             gameObject.tag = "Enemy";
             
             if (_ep.canFly)
@@ -40,27 +44,28 @@ public class EnemyMovement : MonoBehaviour
 
     private void Update()
     {
-        switch (EnemyStatus)
+        
+        switch (enemyStatus)
         {
-            case enemyStatus.Idle:
+            case EnemyStatus.Idle:
             {
-                    
+                
             }
                 break;
 
-            case enemyStatus.Patrol:
+            case EnemyStatus.Patrol:
             {
                 
             }
                 break;
             
-            case enemyStatus.Targeting:
+            case EnemyStatus.Targeting:
             {
                 
             }
                 break;
             
-            case enemyStatus.Attacking:
+            case EnemyStatus.Attacking:
             {
                 
             }

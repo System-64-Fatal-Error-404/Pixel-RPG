@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Enemy", menuName = "Enemy")]
@@ -17,4 +15,11 @@ public class EnemyProperties : ScriptableObject
     public AudioClip attackSound;
 
     public bool canFly;
+
+    void Idle(Transform plrTrans)
+    {
+        
+        
+        
+    }
 }

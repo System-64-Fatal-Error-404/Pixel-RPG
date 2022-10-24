@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
     private float curTime = 0.0f;
     private bool timerHasStarted = false;
     private bool timerIsBackwards = false;
+
+    private Coroutine coolDownBeforeTime;
     public static Transform plrTrans 
     {
         get => GameObject.Find("Player").GetComponent<Transform>();
@@ -38,21 +40,32 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         if (timerIsBackwards)
         {
-            
+            curTime = Time.realtimeSinceStartup;
         }
         else if (!timerIsBackwards)
         {
-            curTime -= Time.fixedDeltaTime;
+            curTime = Time.realtimeSinceStartup;
         }
         else
         {
             curTime = 0.0f;
         }
-        
     }
-    
+    private void FixedUpdate()
+    {
+        string curSec = ((int)(curTime % 60)).ToString();
+        if (curSec.Length < 2)
+        {
+            curSec = "0" + curSec;
+        }
+        else
+        {
+            curSec = curSec;
+        }
+        _timerText.text = "Time \n" + (int)(curTime / 60) + " : " + curSec;
+    }
 }
