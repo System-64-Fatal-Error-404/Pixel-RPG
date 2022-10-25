@@ -4,10 +4,16 @@ using UnityEngine;
 public class EnemyProperties : ScriptableObject
 {
     public string enemyName;
-    public float enemyHP;
+
+    public float enemyHP
+    {
+        get;
+    }
+    
     public float enemyAP;
     public float enemySpeed;
     public float enemyMaximumSpeed;
+    public float enemyMinimumSpeed;
 
     public float pov;
     public float range;
@@ -15,11 +21,4 @@ public class EnemyProperties : ScriptableObject
     public AudioClip attackSound;
 
     public bool canFly;
-
-    void Idle(Transform plrTrans)
-    {
-        
-        
-        
-    }
 }

@@ -26,6 +26,8 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isTouchingGrass = true;
     private bool canJump = true;
+    
+    Vector2 vec2Facing = Vector2.right;
 
     void Start()
     {
@@ -54,6 +56,15 @@ public class PlayerMovement : MonoBehaviour
         Vector2 moveInput = moveAction.ReadValue<Vector2>();
         float moveX = moveInput.x;
 
+        if (moveX == 1)
+        {
+            vec2Facing = Vector2.right;
+        }
+        else
+        {
+            vec2Facing = Vector2.left;
+        }
+
         bool movement = Mathf.Abs(moveInput.x) > Mathf.Epsilon;
         bool sprint = sprintAction.IsPressed();
 
@@ -64,7 +75,7 @@ public class PlayerMovement : MonoBehaviour
         _body.AddForce(Vector2.right * moveX * curTempSpeed, ForceMode2D.Force);
         Debug.Log("velocity.x: " + _body.velocity.x);
         
-        //Speed Limits
+        //Cap Speed Limit
             if (_body.velocity.x >= curTempSpeed || _body.velocity.x <= -curTempSpeed && movement)
             {
                 _body.velocity = new Vector2(moveX * curTempSpeed, _body.velocity.y);

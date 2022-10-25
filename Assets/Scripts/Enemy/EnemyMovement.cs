@@ -9,13 +9,13 @@ public class EnemyMovement : MonoBehaviour
 {
     [SerializeField] private EnemyProperties _ep;
 
-    private Rigidbody2D _body;
-    private Transform plrTrans;
+    protected Rigidbody2D _body;
+    protected Transform plrTrans;
 
-    private Animator m_Animator;
+    protected Animator m_Animator;
     
-    [SerializeField] private EnemyStatus enemyStatus = EnemyStatus.Patrol;
-    enum EnemyStatus
+    [SerializeField] protected EnemyStatus enemyStatus = EnemyStatus.Patrol;
+    protected enum EnemyStatus
     {
         Idle,
         Patrol,
@@ -42,26 +42,30 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    private void Update()
+    protected virtual void Update()
     {
-        
+        CheckStatus();
+    }
+
+    protected void CheckStatus()
+    {
         switch (enemyStatus)
         {
             case EnemyStatus.Idle:
             {
-                
+                SetIdle();
             }
                 break;
 
             case EnemyStatus.Patrol:
             {
-                
+                EnemySetActive();
             }
                 break;
             
             case EnemyStatus.Targeting:
             {
-                
+                EnemySetActive();
             }
                 break;
             
@@ -71,5 +75,33 @@ public class EnemyMovement : MonoBehaviour
             }
                 break;
         }
+    }
+
+    protected void EnemySetActive()
+    {
+        m_Animator.SetBool("isIdle", false);
+        if (_ep.canFly)
+        {
+            m_Animator.SetBool("isFlying", true);
+        }
+        else
+        {
+            if (_body.velocity.x < _ep.enemyMinimumSpeed && _body.velocity.x > -_ep.enemyMinimumSpeed)
+            {
+                m_Animator.SetBool("isWalking", true);
+                m_Animator.SetBool("isRunning", false);
+            }
+            else
+            {
+                m_Animator.SetBool("isWalking", false);
+                m_Animator.SetBool("isRunning", true);
+            }
+                    
+        }
+    }
+
+    protected void SetIdle()
+    {
+        m_Animator.SetBool("isIdle", true);
     }
 }
