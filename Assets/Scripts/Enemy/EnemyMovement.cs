@@ -8,11 +8,13 @@ using UnityEngine;
 public class EnemyMovement : MonoBehaviour
 {
     [SerializeField] private EnemyProperties _ep;
-
-    protected Rigidbody2D _body;
-    protected Transform plrTrans;
-
+    
     protected Animator m_Animator;
+    protected Rigidbody2D _body;
+    public float currentHP => _ep.enemyHP;
+    
+    [SerializeField] private Transform plrTrans;
+    private Vector2 targetPos;
     
     [SerializeField] protected EnemyStatus enemyStatus = EnemyStatus.Patrol;
     protected enum EnemyStatus
@@ -24,6 +26,7 @@ public class EnemyMovement : MonoBehaviour
     }
     private void Awake()
     {
+        Debug.Log("current Eagle HP: " + currentHP);
         if (gameObject.activeSelf)
         {
             m_Animator = GetComponent<Animator>();
@@ -34,6 +37,7 @@ public class EnemyMovement : MonoBehaviour
             if (_ep.canFly)
             {
                 _body.constraints = RigidbodyConstraints2D.FreezePositionY;
+                _body.gravityScale = 0.0f;
             }
             else
             {
@@ -66,6 +70,7 @@ public class EnemyMovement : MonoBehaviour
             case EnemyStatus.Targeting:
             {
                 EnemySetActive();
+                Targeting();
             }
                 break;
             
@@ -100,8 +105,32 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    protected void SetIdle()
+    protected virtual void SetIdle()
     {
         m_Animator.SetBool("isIdle", true);
+    }
+    protected virtual void Patrol()
+    {
+        
+    }
+    protected virtual void Targeting()
+    {
+        TargetPlayer();
+    }
+    protected virtual void Attack()
+    {
+        
+    }
+    protected virtual void TargetPlayer()
+    {
+        targetPos = plrTrans.position;
+    }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.tag == "Bullet")
+        {
+            
+        }
     }
 }
