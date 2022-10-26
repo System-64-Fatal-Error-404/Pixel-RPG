@@ -9,7 +9,8 @@ using UnityEngine;
 public class EnemyMovement : MonoBehaviour
 {
     [SerializeField] private EnemyProperties _ep;
-    
+    [SerializeField] private List<Transform> pathPoints;
+
     protected Animator m_Animator;
     protected Rigidbody2D _body;
     public float currentHP;
@@ -28,6 +29,7 @@ public class EnemyMovement : MonoBehaviour
     private void Awake()
     {
         TargetPlayer();
+        currentHP = _ep.enemyHP;
         
         Debug.Log("current Eagle HP: " + currentHP);
         if (gameObject.activeSelf)
