@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] InputAction moveAction;
     [SerializeField] InputAction sprintAction;
     [SerializeField] InputAction jumpAction;
+    [SerializeField] InputAction attackAction;
     [SerializeField] public float _hp = 10;
     [SerializeField] float moveSpeed = 5;
     [SerializeField] float sprintSpeed = 10;
@@ -30,6 +31,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float jumpDuration = 2f;
 
     private Rocks _rocks;
+    public int rockCount = 0;
+    private bool hasShot = false;
 
     private float rcRange = 6.5f;
 
