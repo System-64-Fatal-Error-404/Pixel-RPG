@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Main Title.unity
     guid: 725f06a130cb73543b62b6817ef23cac
   - enabled: 1
-    path: Assets/Scenes/Game.unity
+    path: Assets/Scenes/Jaguar.unity
     guid: 1510480decb34b241b2db3f0b96ae7e2
   - enabled: 1
     path: Assets/Scenes/WinGame.unity
@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LoseGame.unity
     guid: 60987eb49b663ed49b37c70f5b7e3ad4
+  - enabled: 1
+    path: Assets/Scenes/Eagle.unity
+    guid: c48de46fd10c61e4d8acede4b73cc316
   m_configObjects: {}
