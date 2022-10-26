@@ -12,10 +12,11 @@ public class GameManager : MonoBehaviour
     private static int plrAmount;
     
     private float curTime = 0.0f;
-    private bool timerHasStarted = false;
+    private bool isCounting = false;
     private bool timerIsBackwards = false;
 
-    private Coroutine coolDownBeforeTime;
+    private static Coroutine coolDownBeforeTime;
+    
     public static Transform plrTrans 
     {
         get => GameObject.Find("Player").GetComponent<Transform>();

@@ -5,8 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Enemy
-  - PowerUp
-  - Projectiles
+  - Floor
   layers:
   - Default
   - TransparentFX
@@ -14,11 +13,11 @@ TagManager:
   - 
   - Water
   - UI
-  - Player
-  - Entities
-  - Projectiles
-  - Environment
-  - Collectables
+  - 
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 
@@ -43,4 +42,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Background Layer 1
+    uniqueID: 4086022843
+    locked: 0
+  - name: New Layer 2
+    uniqueID: 2640281559
     locked: 0
