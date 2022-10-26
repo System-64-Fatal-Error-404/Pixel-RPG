@@ -17,7 +17,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] InputAction moveAction;
     [SerializeField] InputAction sprintAction;
     [SerializeField] InputAction jumpAction;
-    [SerializeField] private float _hp = 10;
+    [SerializeField] public float _hp = 10;
     [SerializeField] float moveSpeed = 5;
     [SerializeField] float sprintSpeed = 10;
     [SerializeField] float jumpPower = 5;
