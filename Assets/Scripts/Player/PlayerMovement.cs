@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Animator))]
@@ -147,6 +148,11 @@ public class PlayerMovement : MonoBehaviour
                 yield return null;
             }
             */
+        }
+
+        if (_hp <= 0) // so when the player dies they go to the loss screen
+        {
+            SceneManager.LoadScene("WinGame");
         }
     }
 

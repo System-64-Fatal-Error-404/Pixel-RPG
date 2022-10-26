@@ -25,6 +25,11 @@ public class MainMenu : MonoBehaviour
         Application.Quit(); // this only works when the game is built
         Debug.Log("Exiting Game..."); // use this to show functionality in unity editor
     }
+
+    public void GoToMainMenu() // pretty self explanatory
+    {
+        SceneManager.LoadScene("MainTitle");
+    }
 }
 
 
