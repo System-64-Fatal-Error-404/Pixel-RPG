@@ -1667,9 +1667,15 @@ MonoBehaviour:
   pathPoints:
   - {fileID: 533580714}
   - {fileID: 153869147}
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  obstructLayer:
+    serializedVersion: 2
+    m_Bits: 0
   currentHP: 0
   attackPower: 0
-  plrTrans: {fileID: 506477667}
+  plr: {fileID: 0}
   enemyStatus: 1
 --- !u!95 &789904346
 Animator:
@@ -2834,9 +2840,15 @@ MonoBehaviour:
   pathPoints:
   - {fileID: 533580714}
   - {fileID: 153869147}
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  obstructLayer:
+    serializedVersion: 2
+    m_Bits: 0
   currentHP: 0
   attackPower: 0
-  plrTrans: {fileID: 506477667}
+  plr: {fileID: 0}
   enemyStatus: 1
 --- !u!70 &1979130187
 CapsuleCollider2D:

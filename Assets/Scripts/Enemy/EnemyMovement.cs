@@ -11,13 +11,17 @@ public class EnemyMovement : MonoBehaviour
 {
     [SerializeField] private EnemyProperties _ep;
     [SerializeField] private List<Transform> pathPoints;
+    public LayerMask targetLayer;
+    public LayerMask obstructLayer;
+    
+    public bool canSeePlayer { get; private set; }
 
     protected Animator m_Animator;
     protected Rigidbody2D _body;
     public float currentHP;
     public float attackPower;
     
-    [SerializeField] private Transform plrTrans;
+    [SerializeField] private GameObject plr;
     private Vector2 targetPos;
     private Vector2 plrPos;
     private Vector2 dirNormalized;
@@ -53,7 +57,7 @@ public class EnemyMovement : MonoBehaviour
         {
             m_Animator = GetComponent<Animator>();
             _body = GetComponent<Rigidbody2D>();
-            plrTrans = GameManager.plrTrans;    
+            plrPos = GameManager.plrTrans.position;    
             gameObject.tag = "Enemy";
             
             if (_ep.canFly)
@@ -74,11 +78,13 @@ public class EnemyMovement : MonoBehaviour
         
         if (_body.velocity.x > 0.5f)
         {
-            transform.rotation = Quaternion.Euler(new Vector3(0, -180, 0));
+            float facingRight = Single.IsNegative(transform.localScale.x) ? -transform.localScale.x : transform.localScale.x;
+            transform.localScale = new Vector3(facingRight, transform.localScale.y, transform.localScale.z);
         }
         else if (_body.velocity.x < -0.5f)
         {
-            transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+            float facingLeft = Single.IsNegative(transform.localScale.x) ? transform.localScale.x : -transform.localScale.x;
+            transform.localScale = new Vector3(facingLeft, transform.localScale.y, transform.localScale.z);
         }
     }
 
@@ -145,6 +151,9 @@ public class EnemyMovement : MonoBehaviour
     
     protected virtual void Patrol()
     {
+        if (canSeePlayer)
+            enemyStatus = EnemyStatus.Targeting;
+        
         float ct = t / td;
         Debug.Log("currentTime: " + ct);
 
@@ -192,11 +201,11 @@ public class EnemyMovement : MonoBehaviour
     }
     protected virtual void Targeting()
     {
-        if (plrTrans.position.x - transform.position.x > 5)
+        if (plr.transform.position.x - transform.position.x > 5)
         {
             if (!_ep.canFly)
             {
-                _body.AddForce(new Vector2(Vector3.Normalize(plrTrans.position - transform.position).x, 0)* 5.0f, ForceMode2D.Force);
+                _body.AddForce(new Vector2(Vector3.Normalize(plr.transform.position - transform.position).x, 0)* 5.0f, ForceMode2D.Force);
             }
         }
         else
@@ -209,10 +218,7 @@ public class EnemyMovement : MonoBehaviour
     {
         m_Animator.SetBool("isAttacking", true);
         
-        if (Utility.InRangeDebug(transform, plrTrans, _ep.range ,_ep.pov))
-        {
-            
-        }
+        
         
         enemyStatus = EnemyStatus.Patrol;
         
@@ -223,7 +229,7 @@ public class EnemyMovement : MonoBehaviour
     //Methods
     protected void TargetPlayer()
     {
-        targetPos = plrTrans.position;
+        targetPos = plr.transform.position;
     }
 
     private void OnCollisionEnter2D(Collision2D other)
@@ -233,7 +239,7 @@ public class EnemyMovement : MonoBehaviour
             currentHP--;
             Destroy(other.gameObject, 1.0f);
 
-            if (currentHP <= 0)
+            if (currentHP <= 0.0f)
             {
                 StartCoroutine(Die());
             }
@@ -247,5 +253,53 @@ public class EnemyMovement : MonoBehaviour
         yield return new WaitForSeconds(3.5f);
         
         Destroy(gameObject);
+    }
+
+    void POV()
+    {
+        float angle;
+        
+        Collider2D[] rangeCheck = Physics2D.OverlapCircleAll(transform.position, _ep.pov, targetLayer);
+
+        if (rangeCheck.Length > 0)
+        {
+            Transform target = rangeCheck[0].transform;
+            Vector2 dirToTarget = (target.position - transform.position).normalized;
+
+            if (_ep.canFly)
+            {
+                //angle
+                angle = 90;
+            }
+            else
+            {
+                //angle
+                angle = 45;
+            }
+
+            if (Vector2.Angle(transform.up, dirToTarget) < angle / 2)
+            {
+                float disToTarget = Vector2.Distance(transform.position, target.position);
+
+                if (Physics2D.Raycast(transform.position, dirToTarget, disToTarget, obstructLayer))
+                    canSeePlayer = true;
+                else
+                    canSeePlayer = false;
+            }
+            else
+            {
+                canSeePlayer = false;
+            }
+        }else if (canSeePlayer)
+            canSeePlayer = false;
+    }
+
+    IEnumerator POVCheck()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(0.2f);
+            POV();
+        }
     }
 }
