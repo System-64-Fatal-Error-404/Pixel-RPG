@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Eagle
   m_EditorClassIdentifier: 
   enemyName: Eagle
-  enemyHP: 5
   enemyAP: 10
-  enemySpeed: 2
+  enemySpeed: 5
   enemyMaximumSpeed: 10
+  enemyMinimumSpeed: 0
   pov: 80
   range: 10
   attackSound: {fileID: 0}

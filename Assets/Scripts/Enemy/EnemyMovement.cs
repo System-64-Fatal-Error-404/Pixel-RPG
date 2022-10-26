@@ -1,8 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using Unity.Mathematics;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Animator))]
@@ -17,8 +18,16 @@ public class EnemyMovement : MonoBehaviour
     
     [SerializeField] private Transform plrTrans;
     private Vector2 targetPos;
+    private Vector2 dirNormalized;
     
     [SerializeField] protected EnemyStatus enemyStatus = EnemyStatus.Patrol;
+    
+    //Path Finder
+    private static float t = 0.0f;
+    private static float td = 20.0f;
+    private static float rd;
+    private static int i;
+    
     protected enum EnemyStatus
     {
         Idle,
@@ -28,6 +37,10 @@ public class EnemyMovement : MonoBehaviour
     }
     private void Awake()
     {
+        rd = Random.Range(0f, 1f);
+        t = math.round(rd);
+        Debug.Log("Starting Time: " + t);
+        
         TargetPlayer();
         currentHP = _ep.enemyHP;
         
@@ -57,11 +70,11 @@ public class EnemyMovement : MonoBehaviour
         
         if (_body.velocity.x > 0.5f)
         {
-            transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+            transform.rotation = Quaternion.Euler(new Vector3(0, -180, 0));
         }
         else if (_body.velocity.x < -0.5f)
         {
-            transform.rotation = Quaternion.Euler(new Vector3(0, -180, 0));
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
         }
     }
 
@@ -78,6 +91,8 @@ public class EnemyMovement : MonoBehaviour
             case EnemyStatus.Patrol:
             {
                 EnemySetActive();
+                Patrol();
+                _body.AddForce(dirNormalized * _ep.enemySpeed, ForceMode2D.Force);
             }
                 break;
             
@@ -115,10 +130,10 @@ public class EnemyMovement : MonoBehaviour
                 m_Animator.SetBool("isWalking", false);
                 m_Animator.SetBool("isRunning", true);
             }
-                    
         }
     }
 
+    //Set Enum
     protected virtual void SetIdle()
     {
         m_Animator.SetBool("isIdle", true);
@@ -126,28 +141,63 @@ public class EnemyMovement : MonoBehaviour
     
     protected virtual void Patrol()
     {
-        
+        float ct = t / td;
+        Debug.Log("currentTime: " + ct);
+        targetPos = Vector2.Lerp(pathPoints[i].position, pathPoints[i++].position, ct);
+
+        Vector2 dir = targetPos - new Vector2(transform.position.x, transform.position.y);
+        float mag = math.sqrt(math.exp2(dir.x) + math.exp2(dir.y));
+        dirNormalized = dir/mag;
+
+        if (t >= td || Single.IsNaN(t))
+        {
+            t = 0;
+            
+            if (i++ >= pathPoints.Count - 1)
+            {
+                i = 0;
+            }
+            else
+            {
+                i++;
+            }
+        }
+        else
+        {
+            t += Time.deltaTime;
+        }
     }
     protected virtual void Targeting()
     {
-        TargetPlayer();
-
-        if (plrTrans.position.x - transform.position.x >= 5)
+        if (plrTrans.position.x - transform.position.x > 5)
         {
+            if (!_ep.canFly)
+            {
+                _body.AddForce(new Vector2(Vector3.Normalize(plrTrans.position - transform.position).x, 0)* 5.0f, ForceMode2D.Force);
+            }
+        }
+        else
+        {
+            _body.velocity = Vector2.zero;
             enemyStatus = EnemyStatus.Attacking;
         }
     }
     protected virtual IEnumerator Attack()
     {
+        m_Animator.SetBool("isAttacking", true);
         
-        if (Utility.InRange(transform, plrTrans, _ep.range ,_ep.pov))
+        if (Utility.InRangeDebug(transform, plrTrans, _ep.range ,_ep.pov))
         {
             
         }
         
         enemyStatus = EnemyStatus.Patrol;
+        
+        m_Animator.SetBool("isAttacking", true);
         yield return null;
     }
+    
+    //Methods
     protected void TargetPlayer()
     {
         targetPos = plrTrans.position;
