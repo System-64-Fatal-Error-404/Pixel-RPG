@@ -13,18 +13,7 @@ public class MainMenu : MonoBehaviour
     //Sends the player to the game scene
     public void PlayGame()
     {
-        if (text.text == "Jaguar")
-        {
-            SceneManager.LoadScene("Jaguar");
-        }
-        else if (text.text == "Eagle")
-        {
-            SceneManager.LoadScene("Eagle");
-        }
-        else
-        {
-            SceneManager.LoadScene("Jaguar");
-        }
+        SceneManager.LoadScene("Jaguar");
         
         newGame = true;
     }
@@ -44,6 +33,11 @@ public class MainMenu : MonoBehaviour
     public void GoToMainMenu() // pretty self explanatory
     {
         SceneManager.LoadScene("Main Title");
+    }
+
+    public void GoToEagle()
+    {
+        SceneManager.LoadScene("Eagle");
     }
 }
 
