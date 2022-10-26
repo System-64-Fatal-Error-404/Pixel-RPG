@@ -5,9 +5,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 public class EagleMovement : EnemyMovement
-{ 
-    protected override void SetIdle()
-    {
-        
-    }
+{
+    
 }

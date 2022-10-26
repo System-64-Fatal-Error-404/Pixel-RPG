@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -11,7 +12,7 @@ public class EnemyMovement : MonoBehaviour
     
     protected Animator m_Animator;
     protected Rigidbody2D _body;
-    public float currentHP => _ep.enemyHP;
+    public float currentHP;
     
     [SerializeField] private Transform plrTrans;
     private Vector2 targetPos;
@@ -26,6 +27,8 @@ public class EnemyMovement : MonoBehaviour
     }
     private void Awake()
     {
+        TargetPlayer();
+        
         Debug.Log("current Eagle HP: " + currentHP);
         if (gameObject.activeSelf)
         {
@@ -36,7 +39,7 @@ public class EnemyMovement : MonoBehaviour
             
             if (_ep.canFly)
             {
-                _body.constraints = RigidbodyConstraints2D.FreezePositionY;
+                _body.constraints = RigidbodyConstraints2D.FreezeRotation;
                 _body.gravityScale = 0.0f;
             }
             else
@@ -49,6 +52,15 @@ public class EnemyMovement : MonoBehaviour
     protected virtual void Update()
     {
         CheckStatus();
+        
+        if (_body.velocity.x > 0.5f)
+        {
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+        }
+        else if (_body.velocity.x < -0.5f)
+        {
+            transform.rotation = Quaternion.Euler(new Vector3(0, -180, 0));
+        }
     }
 
     protected void CheckStatus()
@@ -76,7 +88,7 @@ public class EnemyMovement : MonoBehaviour
             
             case EnemyStatus.Attacking:
             {
-                
+                StartCoroutine(Attack());
             }
                 break;
         }
@@ -109,6 +121,7 @@ public class EnemyMovement : MonoBehaviour
     {
         m_Animator.SetBool("isIdle", true);
     }
+    
     protected virtual void Patrol()
     {
         
@@ -116,12 +129,24 @@ public class EnemyMovement : MonoBehaviour
     protected virtual void Targeting()
     {
         TargetPlayer();
+
+        if (plrTrans.position.x - transform.position.x >= 5)
+        {
+            enemyStatus = EnemyStatus.Attacking;
+        }
     }
-    protected virtual void Attack()
+    protected virtual IEnumerator Attack()
     {
         
+        if (Utility.InRange(transform, plrTrans, _ep.range ,_ep.pov))
+        {
+            
+        }
+        
+        enemyStatus = EnemyStatus.Patrol;
+        yield return null;
     }
-    protected virtual void TargetPlayer()
+    protected void TargetPlayer()
     {
         targetPos = plrTrans.position;
     }
@@ -132,5 +157,10 @@ public class EnemyMovement : MonoBehaviour
         {
             
         }
+    }
+
+    private IEnumerator Die()
+    {
+        yield return null;
     }
 }

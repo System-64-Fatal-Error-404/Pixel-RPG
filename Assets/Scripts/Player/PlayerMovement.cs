@@ -12,11 +12,12 @@ public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D _body;
     private Collider2D _collider;
-    private Animator animator;
+    private Animator _animator;
     private InputActionProperty _input;
     [SerializeField] InputAction moveAction;
     [SerializeField] InputAction sprintAction;
     [SerializeField] InputAction jumpAction;
+    [SerializeField] private float _hp = 10;
     [SerializeField] float moveSpeed = 5;
     [SerializeField] float sprintSpeed = 10;
     [SerializeField] float jumpPower = 5;
@@ -33,7 +34,7 @@ public class PlayerMovement : MonoBehaviour
     {
         _body = GetComponent<Rigidbody2D>();
         _collider = GetComponent<Collider2D>();
-        animator = GetComponent<Animator>();
+        _animator = GetComponent<Animator>();
     }
 
     private void OnEnable()
@@ -55,14 +56,17 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector2 moveInput = moveAction.ReadValue<Vector2>();
         float moveX = moveInput.x;
+        float moveY = moveInput.y;
 
-        if (moveX == 1)
+        if (moveX == 1.0f)
         {
             vec2Facing = Vector2.right;
+            transform.localScale = new Vector3(0.4f, transform.localScale.y, transform.localScale.z);
         }
-        else
+        else if (moveX == -1.0f)
         {
             vec2Facing = Vector2.left;
+            transform.localScale = new Vector3(-0.4f, transform.localScale.y, transform.localScale.z);
         }
 
         bool movement = Mathf.Abs(moveInput.x) > Mathf.Epsilon;
@@ -81,6 +85,11 @@ public class PlayerMovement : MonoBehaviour
                 _body.velocity = new Vector2(moveX * curTempSpeed, _body.velocity.y);
                 Debug.Log("Cap x velocity to: " + curTempSpeed);
             }
+            
+        if (moveY < 0.0f)
+        {
+            _body.AddForce(Vector2.down * curTempSpeed, ForceMode2D.Force);
+        }
 
         if (isTouchingGrass && !movement)
         {
@@ -88,22 +97,13 @@ public class PlayerMovement : MonoBehaviour
             Debug.Log("velocity = 0");
         }
 
-        if (sprint)
+        if (_body.velocity.x >= 0.5f || _body.velocity.x <= -0.5f)
         {
-            animator.SetBool("IsRunning", true);
+            _animator.SetBool("IsWalking", true);
         }
         else
         {
-            animator.SetBool("IsRunning", false);
-        }
-
-        if (movement)
-        {
-            animator.SetBool("IsWalking", true);
-        }
-        else
-        {
-            animator.SetBool("IsWalking", false);
+            _animator.SetBool("IsWalking", false);
         }
         
         if (jumpAction.triggered && isTouchingGrass)
@@ -115,7 +115,7 @@ public class PlayerMovement : MonoBehaviour
         {
             Debug.Log("Jumped");
             isTouchingGrass = false;
-            animator.SetBool("IsJumping", true);
+            _animator.SetBool("IsJumping", true);
             
             _body.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
             
@@ -156,7 +156,12 @@ public class PlayerMovement : MonoBehaviour
         {
             isTouchingGrass = true;
             Debug.Log("Touching Grass.");
-            animator.SetBool("IsJumping", false);
+            _animator.SetBool("IsJumping", false);
+        }
+
+        if (other.gameObject.tag == "Enemy")
+        {
+            _hp -= other.gameObject.GetComponent<EnemyProperties>().enemyAP;
         }
     }
 
