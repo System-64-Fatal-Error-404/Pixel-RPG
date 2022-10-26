@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour
 {
-    public Slider healthBar;
+    [SerializeField] private Slider healthBar;
     PlayerMovement plr;
     private float percentage;
 

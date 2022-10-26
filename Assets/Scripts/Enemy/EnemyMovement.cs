@@ -125,13 +125,14 @@ public class EnemyMovement : MonoBehaviour
         {
             if (_body.velocity.x < _ep.enemyMinimumSpeed && _body.velocity.x > -_ep.enemyMinimumSpeed)
             {
-                m_Animator.SetBool("isWalking", true);
                 m_Animator.SetBool("isRunning", false);
+                m_Animator.SetBool("isWalking", true);
             }
-            else
+            
+            if(_body.velocity.x < _ep.enemyMaximumSpeed && _body.velocity.x > -_ep.enemyMaximumSpeed)
             {
-                m_Animator.SetBool("isWalking", false);
                 m_Animator.SetBool("isRunning", true);
+                m_Animator.SetBool("isWalking", false);
             }
         }
     }
@@ -229,12 +230,22 @@ public class EnemyMovement : MonoBehaviour
     {
         if (other.gameObject.tag == "Bullet")
         {
-            
+            currentHP--;
+            Destroy(other.gameObject, 1.0f);
+
+            if (currentHP <= 0)
+            {
+                StartCoroutine(Die());
+            }
         }
     }
 
     private IEnumerator Die()
     {
-        yield return null;
+        m_Animator.SetBool("isDead", true);
+        _body.constraints = RigidbodyConstraints2D.None;
+        yield return new WaitForSeconds(3.5f);
+        
+        Destroy(gameObject);
     }
 }

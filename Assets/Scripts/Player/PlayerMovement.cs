@@ -30,7 +30,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float jumpDuration = 2f;
 
     private Rocks _rocks;
-    public int rockCount = 0;
+    public int rockCount;
     private bool hasShot = false;
 
     private float rcRange = 6.5f;
@@ -129,11 +129,6 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(Attack());
         }
 
-        if (_hp <= 0)
-        {
-            StartCoroutine(Die());
-        }
-        
         IEnumerator Jump()
         {
             Debug.Log("Jumped");
@@ -177,7 +172,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isDead) // so when the player dies they go to the loss screen
         {
-            SceneManager.LoadScene("LoseGame");
+            StartCoroutine(Die());
         }
     }
 
@@ -216,13 +211,14 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    //Coroutines
     IEnumerator Attack()
     {
         hasShot = true;
         rockCount--;
 
         var fireballInst = Instantiate(rock, transform.position, Quaternion.Euler(new Vector2(0, 0)));
-        fireballInst.velocity = new Vector2(rockSpeed, 0);
+        fireballInst.AddForce(new Vector2(rockSpeed, 0), ForceMode2D.Impulse);
 
         yield return new WaitForSeconds(1);
         hasShot = false;
@@ -259,8 +255,14 @@ public class PlayerMovement : MonoBehaviour
     IEnumerator Die()
     {
         _animator.SetBool("isDead", true);
-        yield return new WaitForSeconds(2);
-        isDead = true;
-        yield return null;
+        
+        yield return new WaitForSeconds(2.5f);
+        Destroy(gameObject);
+
+        if (!isDead)
+        {
+            Instantiate(gameObject, transform.position, transform.rotation);
+        }
+        SceneManager.LoadScene("LoseGame");
     }
 }

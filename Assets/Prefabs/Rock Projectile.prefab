@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5561815342353159458}
   m_Layer: 8
   m_Name: Rock Projectile
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
