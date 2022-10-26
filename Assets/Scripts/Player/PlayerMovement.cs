@@ -18,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] InputAction moveAction;
     [SerializeField] InputAction sprintAction;
     [SerializeField] InputAction jumpAction;
-    [SerializeField] public float _hp = 10;
+    [SerializeField] public float _hp = 100;
     [SerializeField] float moveSpeed = 5;
     [SerializeField] float sprintSpeed = 10;
     [SerializeField] float jumpPower = 5;
@@ -149,10 +149,13 @@ public class PlayerMovement : MonoBehaviour
             }
             */
         }
+    }
 
+    private void FixedUpdate()
+    {
         if (_hp <= 0) // so when the player dies they go to the loss screen
         {
-            SceneManager.LoadScene("WinGame");
+            SceneManager.LoadScene("LoseGame");
         }
     }
 
@@ -168,11 +171,23 @@ public class PlayerMovement : MonoBehaviour
         if (other.gameObject.tag == "Enemy")
         {
             _hp -= other.gameObject.GetComponent<EnemyMovement>().attackPower;
+            StartCoroutine(TakeDamage());
         }
     }
 
     IEnumerator Attack()
     {
         yield return new WaitForSeconds(1.0f);
+    }
+
+    IEnumerator TakeDamage()
+    {
+        _body.AddForce(-vec2Facing, ForceMode2D.Impulse);
+        yield return null;
+    }
+
+    IEnumerator Die()
+    {
+        yield return null;
     }
 }

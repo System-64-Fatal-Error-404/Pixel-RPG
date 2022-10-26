@@ -150,7 +150,16 @@ public class EnemyMovement : MonoBehaviour
         float mag = math.sqrt(math.exp2(dir.x) + math.exp2(dir.y));
         dirNormalized = dir/mag;
         
-        _body.AddForce(dirNormalized * _ep.enemySpeed, ForceMode2D.Force);
+        //Move Towards Target
+        if (_ep.canFly)
+        {
+            _body.AddForce(dirNormalized * _ep.enemySpeed, ForceMode2D.Force);
+        }
+        else
+        {
+            _body.AddForce(Vector2.right * dirNormalized * _ep.enemySpeed, ForceMode2D.Force);
+        }
+        
 
         if (_body.velocity.x >= _ep.enemyMinimumSpeed || _body.velocity.x <= -_ep.enemyMinimumSpeed)
         {
