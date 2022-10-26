@@ -161,7 +161,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (other.gameObject.tag == "Enemy")
         {
-            _hp -= other.gameObject.GetComponent<EnemyProperties>().enemyAP;
+            _hp -= other.gameObject.GetComponent<EnemyMovement>().attackPower;
         }
     }
 

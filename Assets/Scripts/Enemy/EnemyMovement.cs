@@ -15,6 +15,7 @@ public class EnemyMovement : MonoBehaviour
     protected Animator m_Animator;
     protected Rigidbody2D _body;
     public float currentHP;
+    public float attackPower;
     
     [SerializeField] private Transform plrTrans;
     private Vector2 targetPos;
@@ -24,9 +25,9 @@ public class EnemyMovement : MonoBehaviour
     
     //Path Finder
     private static float t = 0.0f;
-    private static float td = 20.0f;
+    private static float td = 15.0f;
     private static float rd;
-    private static int i;
+    private int i;
     
     protected enum EnemyStatus
     {
@@ -43,6 +44,7 @@ public class EnemyMovement : MonoBehaviour
         
         TargetPlayer();
         currentHP = _ep.enemyHP;
+        attackPower = _ep.enemyAP;
         
         Debug.Log("current Eagle HP: " + currentHP);
         if (gameObject.activeSelf)
@@ -92,7 +94,6 @@ public class EnemyMovement : MonoBehaviour
             {
                 EnemySetActive();
                 Patrol();
-                _body.AddForce(dirNormalized * _ep.enemySpeed, ForceMode2D.Force);
             }
                 break;
             
@@ -143,19 +144,27 @@ public class EnemyMovement : MonoBehaviour
     {
         float ct = t / td;
         Debug.Log("currentTime: " + ct);
-        targetPos = Vector2.Lerp(pathPoints[i].position, pathPoints[i++].position, ct);
+        targetPos = pathPoints[i].position;
 
         Vector2 dir = targetPos - new Vector2(transform.position.x, transform.position.y);
         float mag = math.sqrt(math.exp2(dir.x) + math.exp2(dir.y));
         dirNormalized = dir/mag;
+        
+        _body.AddForce(dirNormalized * _ep.enemySpeed, ForceMode2D.Force);
+
+        if (_body.velocity.x >= _ep.enemyMinimumSpeed || _body.velocity.x <= -_ep.enemyMinimumSpeed)
+        {
+            _body.velocity = new Vector2(_ep.enemyMinimumSpeed, _body.velocity.y);
+        }
 
         if (t >= td || Single.IsNaN(t))
         {
             t = 0;
             
-            if (i++ >= pathPoints.Count - 1)
+            if (i + 1 >= pathPoints.Count - 1)
             {
                 i = 0;
+                Debug.Log("i Resets");
             }
             else
             {
