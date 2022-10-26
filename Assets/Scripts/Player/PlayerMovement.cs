@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using Unity.VisualScripting;
-using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -38,6 +37,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool isTouchingGrass = true;
     private bool canJump = true;
+    private bool isDead = false;
     
     Vector2 vec2Facing = Vector2.right;
 
@@ -128,6 +128,11 @@ public class PlayerMovement : MonoBehaviour
         {
             StartCoroutine(Attack());
         }
+
+        if (_hp <= 0)
+        {
+            StartCoroutine(Die());
+        }
         
         IEnumerator Jump()
         {
@@ -170,7 +175,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (_hp <= 0) // so when the player dies they go to the loss screen
+        if (isDead) // so when the player dies they go to the loss screen
         {
             SceneManager.LoadScene("LoseGame");
         }
@@ -247,12 +252,15 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator TakeDamage()
     {
-        _body.AddForce(-vec2Facing, ForceMode2D.Impulse);
+        _body.AddForce(-vec2Facing * 5.5f, ForceMode2D.Impulse);
         yield return null;
     }
 
     IEnumerator Die()
     {
+        _animator.SetBool("isDead", true);
+        yield return new WaitForSeconds(2);
+        isDead = true;
         yield return null;
     }
 }

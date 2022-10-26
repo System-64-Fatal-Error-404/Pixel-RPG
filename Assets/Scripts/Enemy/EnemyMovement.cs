@@ -19,6 +19,7 @@ public class EnemyMovement : MonoBehaviour
     
     [SerializeField] private Transform plrTrans;
     private Vector2 targetPos;
+    private Vector2 plrPos;
     private Vector2 dirNormalized;
     
     [SerializeField] protected EnemyStatus enemyStatus = EnemyStatus.Patrol;
@@ -38,11 +39,12 @@ public class EnemyMovement : MonoBehaviour
     }
     private void Awake()
     {
-        rd = Random.Range(0f, 1f);
+        rd = Random.Range(0f, td);
         t = math.round(rd);
         Debug.Log("Starting Time: " + t);
         
         TargetPlayer();
+        plrPos = transform.position;
         currentHP = _ep.enemyHP;
         attackPower = _ep.enemyAP;
         
@@ -134,7 +136,7 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    //Set Enum
+    //Set Enum Actions
     protected virtual void SetIdle()
     {
         m_Animator.SetBool("isIdle", true);
@@ -144,13 +146,15 @@ public class EnemyMovement : MonoBehaviour
     {
         float ct = t / td;
         Debug.Log("currentTime: " + ct);
-        targetPos = pathPoints[i].position;
+
+        plrPos = pathPoints[i].position;
+        targetPos = Utility.Lerp(plrPos, pathPoints[i + 1].position, ct);
 
         Vector2 dir = targetPos - new Vector2(transform.position.x, transform.position.y);
         float mag = math.sqrt(math.exp2(dir.x) + math.exp2(dir.y));
         dirNormalized = dir/mag;
         
-        //Move Towards Target
+        //Move/Fly Towards Target
         if (_ep.canFly)
         {
             _body.AddForce(dirNormalized * _ep.enemySpeed, ForceMode2D.Force);

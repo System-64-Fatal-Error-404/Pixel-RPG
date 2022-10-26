@@ -206,10 +206,24 @@ MonoBehaviour:
       m_Flags: 0
     m_Flags: 0
   _hp: 10
+  attackAction:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 27b435e8-e656-4839-8664-0adbfc33f24f
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
   moveSpeed: 5
   sprintSpeed: 9
+  addSpeed: 5
+  rock: {fileID: 0}
+  addDamage: 2
+  rockSpeed: 5
   jumpPower: 8
   jumpDuration: 0.93
+  rockCount: 0
 --- !u!95 &8027095803304246818
 Animator:
   serializedVersion: 4

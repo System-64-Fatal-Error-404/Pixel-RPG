@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public static class Utility
 {
+    public static SceneManager m_SceneManager;
     public static bool InRange(Transform viewer, Transform target, float length, float fov)
     {
         // If the target is outside the viewer's sensor region, don't bother continuing
@@ -48,5 +51,10 @@ public static class Utility
         Debug.DrawLine(viewer.position, viewer.position + ql * Vector3.forward * length, color);
         Debug.DrawLine(viewer.position, viewer.position + qr * Vector3.forward * length, color);
         return color == Color.red;
+    }
+
+    public static Vector2 Lerp(Vector2 start, Vector2 end, float t)
+    {
+        return (t) * start + (1-t) * end;
     }
 }

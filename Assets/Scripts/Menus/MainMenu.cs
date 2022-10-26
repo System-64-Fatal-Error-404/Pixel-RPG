@@ -28,7 +28,7 @@ public class MainMenu : MonoBehaviour
 
     public void GoToMainMenu() // pretty self explanatory
     {
-        SceneManager.LoadScene("MainTitle");
+        SceneManager.LoadScene("Main Title");
     }
 }
 

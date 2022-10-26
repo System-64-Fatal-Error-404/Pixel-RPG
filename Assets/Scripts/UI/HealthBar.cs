@@ -6,15 +6,19 @@ using UnityEngine.UI;
 public class HealthBar : MonoBehaviour
 {
     public Slider healthBar;
-    PlayerMovement playerHealth;
+    PlayerMovement plr;
+    private float percentage;
+
+    private float plrHp;
 
     private void Start()
     {
-        playerHealth = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
+        plr = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
+        plrHp = plr._hp;
     }
 
     private void Update()
     {
-        healthBar.value = playerHealth._hp;
+        healthBar.value = plr._hp/plrHp;
     }
 }
