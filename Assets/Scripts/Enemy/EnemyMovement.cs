@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using Unity.Mathematics;
+using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -24,13 +26,16 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] private GameObject plr;
     private Vector2 targetPos;
     private Vector2 plrPos;
-    private Vector2 dirNormalized;
+
+    private Vector2 vec2Facing;
     
+    float angle;
+
     [SerializeField] protected EnemyStatus enemyStatus = EnemyStatus.Patrol;
     
     //Path Finder
     private static float t = 0.0f;
-    private static float td = 15.0f;
+    private static float td = 9.0f;
     private static float rd;
     private int i;
     
@@ -48,16 +53,18 @@ public class EnemyMovement : MonoBehaviour
         Debug.Log("Starting Time: " + t);
         
         TargetPlayer();
-        plrPos = transform.position;
+        plrPos = plr.transform.position;
         currentHP = _ep.enemyHP;
         attackPower = _ep.enemyAP;
         
         Debug.Log("current Eagle HP: " + currentHP);
+        
         if (gameObject.activeSelf)
         {
             m_Animator = GetComponent<Animator>();
             _body = GetComponent<Rigidbody2D>();
-            plrPos = GameManager.plrTrans.position;    
+            plrPos = GameManager.plrTrans.position;
+            
             gameObject.tag = "Enemy";
             
             if (_ep.canFly)
@@ -67,24 +74,48 @@ public class EnemyMovement : MonoBehaviour
             }
             else
             {
-                _body.constraints = RigidbodyConstraints2D.None;
+                _body.constraints = RigidbodyConstraints2D.FreezeRotation;
             }
         }
+        if (_ep.canFly)
+        {
+            //angle
+            angle = 90;
+        }
+        else
+        {
+            //angle
+            angle = 45;
+        }
+        
+        StartCoroutine(FOVCheck());
     }
 
     protected virtual void Update()
     {
         CheckStatus();
         
-        if (_body.velocity.x > 0.5f)
+        if (_body.velocity.x > 1.0f)
         {
-            float facingRight = Single.IsNegative(transform.localScale.x) ? -transform.localScale.x : transform.localScale.x;
-            transform.localScale = new Vector3(facingRight, transform.localScale.y, transform.localScale.z);
+            float faceRight = transform.localScale.x;
+            
+            if (faceRight > 0)
+            {
+                faceRight = -faceRight;
+            }
+            vec2Facing = Vector2.right;
+            transform.localScale = new Vector3(faceRight, transform.localScale.y, transform.localScale.z);
         }
-        else if (_body.velocity.x < -0.5f)
+        else if (_body.velocity.x < -1.0f)
         {
-            float facingLeft = Single.IsNegative(transform.localScale.x) ? transform.localScale.x : -transform.localScale.x;
-            transform.localScale = new Vector3(facingLeft, transform.localScale.y, transform.localScale.z);
+            float faceLeft = transform.localScale.x;
+            
+            if (faceLeft < 0)
+            {
+                faceLeft = -faceLeft;
+            }
+            vec2Facing = Vector2.left;
+            transform.localScale = new Vector3(faceLeft, transform.localScale.y, transform.localScale.z);
         }
     }
 
@@ -158,11 +189,12 @@ public class EnemyMovement : MonoBehaviour
         Debug.Log("currentTime: " + ct);
 
         plrPos = pathPoints[i].position;
-        targetPos = Utility.Lerp(plrPos, pathPoints[i + 1].position, ct);
+        targetPos = Lerp(plrPos, pathPoints[i + 1].position, ct);
 
-        Vector2 dir = targetPos - new Vector2(transform.position.x, transform.position.y);
-        float mag = math.sqrt(math.exp2(dir.x) + math.exp2(dir.y));
-        dirNormalized = dir/mag;
+        Vector2 dirNormalized = (targetPos - new Vector2(transform.position.x, transform.position.y)).normalized;
+        
+        //float mag = math.sqrt(math.exp2(dir.x) + math.exp2(dir.y));
+        //dirNormalized = dir/mag;
         
         //Move/Fly Towards Target
         if (_ep.canFly)
@@ -172,6 +204,12 @@ public class EnemyMovement : MonoBehaviour
         else
         {
             _body.AddForce(Vector2.right * dirNormalized * _ep.enemySpeed, ForceMode2D.Force);
+            
+            //setLimit
+            if (Vector2.Distance(targetPos, transform.position) < 0.5)
+            {
+                _body.velocity = new Vector2(0.02f, _body.velocity.y);
+            }
         }
         
 
@@ -216,11 +254,26 @@ public class EnemyMovement : MonoBehaviour
     }
     protected virtual IEnumerator Attack()
     {
+        TargetPlayer();
+
+        Vector2 dirNormalized = (targetPos - new Vector2(transform.position.x, transform.position.y)).normalized;
+        
         m_Animator.SetBool("isAttacking", true);
+
+        if (_ep.canFly)
+        {
+            _body.AddForce(dirNormalized * _ep.enemySpeed, ForceMode2D.Force);
+        }
+        else
+        {
+            _body.AddForce(new Vector2(dirNormalized.x * _ep.enemySpeed, 1), ForceMode2D.Impulse);
+        }
+
+        if (Vector2.Distance(transform.position, targetPos) < 1)
+        {
+            enemyStatus = EnemyStatus.Patrol;  
+        }
         
-        
-        
-        enemyStatus = EnemyStatus.Patrol;
         
         m_Animator.SetBool("isAttacking", true);
         yield return null;
@@ -236,13 +289,21 @@ public class EnemyMovement : MonoBehaviour
     {
         if (other.gameObject.tag == "Bullet")
         {
-            currentHP--;
-            Destroy(other.gameObject, 1.0f);
+            currentHP -= 0.8f;
+            Destroy(other.gameObject);
 
             if (currentHP <= 0.0f)
             {
                 StartCoroutine(Die());
             }
+        }
+
+        if (other.gameObject.tag == "Player")
+        {
+            enemyStatus = EnemyStatus.Patrol;
+            
+            _body.AddForce(-vec2Facing * 6.0f, ForceMode2D.Impulse);
+            currentHP--;
         }
     }
 
@@ -255,27 +316,14 @@ public class EnemyMovement : MonoBehaviour
         Destroy(gameObject);
     }
 
-    void POV()
+    void FOV()
     {
-        float angle;
-        
-        Collider2D[] rangeCheck = Physics2D.OverlapCircleAll(transform.position, _ep.pov, targetLayer);
+        Collider2D[] rangeCheck = Physics2D.OverlapCircleAll(transform.position, _ep.range, targetLayer);
 
         if (rangeCheck.Length > 0)
         {
             Transform target = rangeCheck[0].transform;
             Vector2 dirToTarget = (target.position - transform.position).normalized;
-
-            if (_ep.canFly)
-            {
-                //angle
-                angle = 90;
-            }
-            else
-            {
-                //angle
-                angle = 45;
-            }
 
             if (Vector2.Angle(transform.up, dirToTarget) < angle / 2)
             {
@@ -294,12 +342,38 @@ public class EnemyMovement : MonoBehaviour
             canSeePlayer = false;
     }
 
-    IEnumerator POVCheck()
+    IEnumerator FOVCheck()
     {
         while (true)
         {
-            yield return new WaitForSeconds(0.2f);
-            POV();
+            yield return new WaitForSeconds(0.2f);;
+            FOV();
         }
+    }
+    
+    //Lerp Function
+    public Vector2 Lerp(Vector2 start, Vector2 end, float t)
+    {
+        return (1-t) * start + (t) * end;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.white;
+        Handles.DrawWireDisc(transform.position, Vector3.forward, _ep.range);
+
+        Vector3 angle1 = DirFromAngle(-transform.eulerAngles.x, -angle / 2);
+        Vector3 angle2 = DirFromAngle(-transform.eulerAngles.x, angle / 2);
+        
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(transform.position, transform.position + angle1 * _ep.range);
+        Gizmos.DrawLine(transform.position, transform.position + angle2 * _ep.range);
+    }
+
+    Vector2 DirFromAngle(float eulerY, float angleInDegrees)
+    {
+        angleInDegrees += eulerY;
+
+        return new Vector2(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
     }
 }

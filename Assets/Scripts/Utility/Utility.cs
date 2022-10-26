@@ -52,9 +52,4 @@ public static class Utility
         Debug.DrawLine(viewer.position, viewer.position + qr * Vector3.forward * length, color);
         return color == Color.red;
     }
-
-    public static Vector2 Lerp(Vector2 start, Vector2 end, float t)
-    {
-        return (t) * start + (1-t) * end;
-    }
 }
