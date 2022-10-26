@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8027095803304246819}
   - component: {fileID: 8027095803304246818}
   - component: {fileID: 8027095803304246817}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 8027095803304246808}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.35, y: -3.15, z: 0}
-  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_LocalScale: {x: 0.3, y: 0.27, z: 0.4}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8027095805150229748}
@@ -122,6 +122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2761a37c8d089c441ae42e8463eb16a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Rocks: {fileID: 0}
   moveAction:
     m_Name: Move
     m_Type: 0
@@ -205,25 +206,42 @@ MonoBehaviour:
       m_Action: Jump
       m_Flags: 0
     m_Flags: 0
-  _hp: 10
   attackAction:
-    m_Name: 
+    m_Name: Attack
     m_Type: 0
     m_ExpectedControlType: 
-    m_Id: 27b435e8-e656-4839-8664-0adbfc33f24f
+    m_Id: 39b6fdd8-142d-40c8-9189-86d81a63bf8d
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 3149ab36-e7cb-440f-a9e5-f7d34e0db8c7
+      m_Path: <Keyboard>/f
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Attack
+      m_Flags: 0
+    m_Flags: 0
+  slashAction:
+    m_Name: Slash
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 1986195c-b690-447c-af8d-6fa310c8ba71
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
+  _hp: 25
   moveSpeed: 5
   sprintSpeed: 9
   addSpeed: 5
-  rock: {fileID: 0}
+  rock: {fileID: 5561815342353159484, guid: b3d9a03403d820e4eb1a2252c6fd6151, type: 3}
   addDamage: 2
-  rockSpeed: 5
+  rockSpeed: 10
   jumpPower: 8
   jumpDuration: 0.93
-  rockCount: 0
+  rockCount: 5
 --- !u!95 &8027095803304246818
 Animator:
   serializedVersion: 4

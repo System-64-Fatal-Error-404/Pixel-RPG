@@ -1,16 +1,31 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
     public bool newGame;
+    [SerializeField] private TextMeshProUGUI text;
 
     //Sends the player to the game scene
     public void PlayGame()
     {
-        SceneManager.LoadScene("Game");
+        if (text.text == "Jaguar")
+        {
+            SceneManager.LoadScene("Jaguar");
+        }
+        else if (text.text == "Eagle")
+        {
+            SceneManager.LoadScene("Eagle");
+        }
+        else
+        {
+            SceneManager.LoadScene("Jaguar");
+        }
+        
         newGame = true;
     }
 

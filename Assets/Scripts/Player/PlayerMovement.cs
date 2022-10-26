@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -15,11 +16,16 @@ public class PlayerMovement : MonoBehaviour
     private Collider2D _collider;
     private Animator _animator;
     private InputActionProperty _input;
+    
+    [SerializeField] private TextMeshProUGUI Rocks;
     [SerializeField] InputAction moveAction;
     [SerializeField] InputAction sprintAction;
     [SerializeField] InputAction jumpAction;
-    [SerializeField] public float _hp = 100;
     [SerializeField] InputAction attackAction;
+    [SerializeField] InputAction slashAction;
+    
+    [SerializeField] public float _hp = 100;
+    
     [SerializeField] float moveSpeed = 5;
     [SerializeField] float sprintSpeed = 10;
     [SerializeField] float addSpeed = 5;
@@ -38,6 +44,8 @@ public class PlayerMovement : MonoBehaviour
     private bool isTouchingGrass = true;
     private bool canJump = true;
     private bool isDead = false;
+    private bool hasLives = false;
+    private bool canAttack = true;
     
     Vector2 vec2Facing = Vector2.right;
 
@@ -54,6 +62,7 @@ public class PlayerMovement : MonoBehaviour
         sprintAction.Enable();
         jumpAction.Enable();
         attackAction.Enable();
+        slashAction.Enable();
     }
     
     private void OnDisable()
@@ -62,6 +71,7 @@ public class PlayerMovement : MonoBehaviour
         sprintAction.Disable();
         jumpAction.Disable();
         attackAction.Disable();
+        slashAction.Enable();
     }
 
     // Update is called once per frame
@@ -126,6 +136,11 @@ public class PlayerMovement : MonoBehaviour
 
         if (attackAction.triggered && !hasShot && rockCount != 0)
         {
+            StartCoroutine(ThrowStone());
+        }
+
+        if (slashAction.triggered && canAttack)
+        {
             StartCoroutine(Attack());
         }
 
@@ -170,10 +185,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isDead) // so when the player dies they go to the loss screen
+        if (_hp <= 0) // so when the player dies they go to the loss screen
         {
             StartCoroutine(Die());
         }
+        
+        Rocks.text = ($"Rocks: {rockCount}");
     }
 
     void OnCollisionEnter2D(Collision2D other)
@@ -211,16 +228,28 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    //Coroutines
     IEnumerator Attack()
+    {
+        canAttack = false;
+        
+        var fireballInst = Instantiate(rock, transform.position, Quaternion.Euler(new Vector2(0, 0)));
+        yield return new WaitForSeconds(1);
+        canAttack = true;
+    }
+
+    //Coroutines
+    IEnumerator ThrowStone()
     {
         hasShot = true;
         rockCount--;
 
         var fireballInst = Instantiate(rock, transform.position, Quaternion.Euler(new Vector2(0, 0)));
-        fireballInst.AddForce(new Vector2(rockSpeed, 0), ForceMode2D.Impulse);
+        fireballInst.gravityScale = 1.1f;
+        fireballInst.AddForce(new Vector2(vec2Facing.x * rockSpeed * 4, 0), ForceMode2D.Impulse);
 
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
+        fireballInst.tag = "Rock Item";
+        
         hasShot = false;
     }
 
@@ -255,14 +284,20 @@ public class PlayerMovement : MonoBehaviour
     IEnumerator Die()
     {
         _animator.SetBool("isDead", true);
+        OnDisable();
         
-        yield return new WaitForSeconds(2.5f);
-        Destroy(gameObject);
+        yield return new WaitForSeconds(1.5f);
 
-        if (!isDead)
+        if (hasLives)
         {
-            Instantiate(gameObject, transform.position, transform.rotation);
+            _animator.SetBool("isDead", false);
+            OnEnable();
+            yield return null;
         }
-        SceneManager.LoadScene("LoseGame");
+        else
+        {
+            Destroy(gameObject, 2.0f);
+            SceneManager.LoadScene("LoseGame");
+        }
     }
 }

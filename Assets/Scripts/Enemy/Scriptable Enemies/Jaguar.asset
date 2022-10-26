@@ -17,7 +17,7 @@ MonoBehaviour:
   enemySpeed: 12
   enemyMaximumSpeed: 20
   enemyMinimumSpeed: 11
-  pov: 90
-  range: 10
+  pov: 60
+  range: 19.08
   attackSound: {fileID: 0}
   canFly: 0
