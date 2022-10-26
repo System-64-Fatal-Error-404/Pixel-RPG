@@ -1,12 +1,9 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Net.Sockets;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Animator))]
@@ -16,7 +13,14 @@ public class PlayerMovement : MonoBehaviour
     private Collider2D _collider;
     private Animator _animator;
     private InputActionProperty _input;
-    
+
+    [SerializeField] public AudioClip APowerUp;
+    [SerializeField] public AudioClip AJump;
+    [SerializeField] public AudioClip ALand;
+    [SerializeField] public AudioClip AScratch;
+    [SerializeField] public AudioClip ADeath;
+    [SerializeField] public AudioClip AThrow;
+
     [SerializeField] private TextMeshProUGUI Rocks;
     [SerializeField] InputAction moveAction;
     [SerializeField] InputAction sprintAction;
@@ -230,6 +234,7 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator Attack()
     {
+        AudioSource.PlayClipAtPoint(AScratch, transform.position);
         canAttack = false;
         
         var fireballInst = Instantiate(rock, transform.position, Quaternion.Euler(new Vector2(0, 0)));
@@ -240,6 +245,7 @@ public class PlayerMovement : MonoBehaviour
     //Coroutines
     IEnumerator ThrowStone()
     {
+        AudioSource.PlayClipAtPoint(AThrow, transform.position);
         hasShot = true;
         rockCount--;
 
@@ -248,13 +254,13 @@ public class PlayerMovement : MonoBehaviour
         fireballInst.AddForce(new Vector2(vec2Facing.x * rockSpeed * 4, 0), ForceMode2D.Impulse);
 
         yield return new WaitForSeconds(2);
-        fireballInst.tag = "Rock Item";
-        
         hasShot = false;
     }
 
     IEnumerator SpeedUp()
     {
+        AudioSource.PlayClipAtPoint(APowerUp, transform.position);
+        
         moveSpeed += addSpeed;
         sprintSpeed += addSpeed;
 
@@ -266,6 +272,7 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator DamageUp()
     {
+        AudioSource.PlayClipAtPoint(APowerUp, transform.position);
         Debug.LogError("Test 1");
         _rocks.rockDamage += addDamage;
 
@@ -277,12 +284,14 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator TakeDamage()
     {
+        AudioSource.PlayClipAtPoint(AScratch, transform.position);
         _body.AddForce(-vec2Facing * 5.5f, ForceMode2D.Impulse);
         yield return null;
     }
 
     IEnumerator Die()
     {
+        AudioSource.PlayClipAtPoint(ADeath, transform.position);
         _animator.SetBool("isDead", true);
         OnDisable();
         

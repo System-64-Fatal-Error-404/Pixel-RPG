@@ -88,7 +88,7 @@ public class EnemyMovement : MonoBehaviour
             angle = 45;
         }
         
-        StartCoroutine(FOVCheck());
+        //StartCoroutine(FOVCheck());
     }
 
     protected virtual void Update()
@@ -239,26 +239,29 @@ public class EnemyMovement : MonoBehaviour
     }
     protected virtual void Targeting()
     {
-        if (plr.transform.position.x - transform.position.x > 5)
+        TargetPlayer();
+        
+        if (Vector2.Distance(targetPos, new Vector2(transform.position.x, transform.position.y)) > 5.0f)
         {
             if (!_ep.canFly)
             {
-                _body.AddForce(new Vector2(Vector3.Normalize(plr.transform.position - transform.position).x, 0)* 5.0f, ForceMode2D.Force);
+                _body.AddForce((targetPos - new Vector2(transform.position.x, transform.position.y)).normalized * 5.0f, ForceMode2D.Force);
+            }
+            else
+            {
+                _body.AddForce(new Vector2((plr.transform.position - transform.position).normalized.x, 0)* 5.0f, ForceMode2D.Force);
             }
         }
         else
         {
             _body.velocity = Vector2.zero;
+            m_Animator.SetBool("isAttacking", true);
             enemyStatus = EnemyStatus.Attacking;
         }
     }
     protected virtual IEnumerator Attack()
     {
-        TargetPlayer();
-
         Vector2 dirNormalized = (targetPos - new Vector2(transform.position.x, transform.position.y)).normalized;
-        
-        m_Animator.SetBool("isAttacking", true);
 
         if (_ep.canFly)
         {
@@ -271,11 +274,12 @@ public class EnemyMovement : MonoBehaviour
 
         if (Vector2.Distance(transform.position, targetPos) < 1)
         {
+            m_Animator.SetBool("isAttacking", false);
             enemyStatus = EnemyStatus.Patrol;  
         }
         
         
-        m_Animator.SetBool("isAttacking", true);
+        
         yield return null;
     }
     
@@ -307,6 +311,14 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.gameObject.tag == "Player")
+        {
+            enemyStatus = EnemyStatus.Targeting;
+        }
+    }
+
     private IEnumerator Die()
     {
         m_Animator.SetBool("isDead", true);
@@ -316,7 +328,7 @@ public class EnemyMovement : MonoBehaviour
         Destroy(gameObject);
     }
 
-    void FOV()
+    /*void FOV()
     {
         Collider2D[] rangeCheck = Physics2D.OverlapCircleAll(transform.position, _ep.range, targetLayer);
 
@@ -349,7 +361,7 @@ public class EnemyMovement : MonoBehaviour
             yield return new WaitForSeconds(0.2f);;
             FOV();
         }
-    }
+    }*/
     
     //Lerp Function
     public Vector2 Lerp(Vector2 start, Vector2 end, float t)
@@ -357,7 +369,7 @@ public class EnemyMovement : MonoBehaviour
         return (1-t) * start + (t) * end;
     }
 
-    private void OnDrawGizmos()
+    /*private void OnDrawGizmos()
     {
         Gizmos.color = Color.white;
         Handles.DrawWireDisc(transform.position, Vector3.forward, _ep.range);
@@ -375,5 +387,5 @@ public class EnemyMovement : MonoBehaviour
         angleInDegrees += eulerY;
 
         return new Vector2(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
-    }
+    }*/
 }
