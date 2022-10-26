@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using Unity.VisualScripting;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -19,10 +20,19 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] InputAction sprintAction;
     [SerializeField] InputAction jumpAction;
     [SerializeField] public float _hp = 100;
+    [SerializeField] InputAction attackAction;
     [SerializeField] float moveSpeed = 5;
     [SerializeField] float sprintSpeed = 10;
+    [SerializeField] float addSpeed = 5;
+    [SerializeField] Rigidbody2D rock;
+    [SerializeField] int addDamage = 2;
+    [SerializeField] float rockSpeed = 5;
     [SerializeField] float jumpPower = 5;
     [SerializeField] float jumpDuration = 2f;
+
+    private Rocks _rocks;
+    public int rockCount = 0;
+    private bool hasShot = false;
 
     private float rcRange = 6.5f;
 
@@ -43,6 +53,7 @@ public class PlayerMovement : MonoBehaviour
         moveAction.Enable();
         sprintAction.Enable();
         jumpAction.Enable();
+        attackAction.Enable();
     }
     
     private void OnDisable()
@@ -50,6 +61,7 @@ public class PlayerMovement : MonoBehaviour
         moveAction.Disable();
         sprintAction.Disable();
         jumpAction.Disable();
+        attackAction.Disable();
     }
 
     // Update is called once per frame
@@ -110,6 +122,11 @@ public class PlayerMovement : MonoBehaviour
         if (jumpAction.triggered && isTouchingGrass)
         {
             StartCoroutine(Jump());
+        }
+
+        if (attackAction.triggered && !hasShot && rockCount != 0)
+        {
+            StartCoroutine(Attack());
         }
         
         IEnumerator Jump()
@@ -173,11 +190,59 @@ public class PlayerMovement : MonoBehaviour
             _hp -= other.gameObject.GetComponent<EnemyMovement>().attackPower;
             StartCoroutine(TakeDamage());
         }
+
+        if (other.gameObject.name == "Speed Powerup")
+        {
+            StartCoroutine(SpeedUp());
+            Destroy(other.gameObject);
+        }
+
+        if (other.gameObject.name == "Damage Powerup")
+        {
+            StartCoroutine(DamageUp());
+            Destroy(other.gameObject);
+        }
+
+        if (other.gameObject.name == "Rock Item")
+        {
+            rockCount++;
+
+            Destroy(other.gameObject);
+        }
     }
 
     IEnumerator Attack()
     {
-        yield return new WaitForSeconds(1.0f);
+        hasShot = true;
+        rockCount--;
+
+        var fireballInst = Instantiate(rock, transform.position, Quaternion.Euler(new Vector2(0, 0)));
+        fireballInst.velocity = new Vector2(rockSpeed, 0);
+
+        yield return new WaitForSeconds(1);
+        hasShot = false;
+    }
+
+    IEnumerator SpeedUp()
+    {
+        moveSpeed += addSpeed;
+        sprintSpeed += addSpeed;
+
+        yield return new WaitForSeconds(10);
+
+        moveSpeed -= addSpeed;
+        sprintSpeed -= addSpeed;
+    }
+
+    IEnumerator DamageUp()
+    {
+        Debug.LogError("Test 1");
+        _rocks.rockDamage += addDamage;
+
+        yield return new WaitForSeconds(1);
+
+        _rocks.rockDamage -= addDamage;
+        Debug.LogError("Test 2");
     }
 
     IEnumerator TakeDamage()
