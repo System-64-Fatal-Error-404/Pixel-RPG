@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using Cinemachine.Utility;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
@@ -31,6 +32,8 @@ public class EnemyMovement : MonoBehaviour
     
     float angle;
 
+    private bool canAttack = true;
+
     [SerializeField] protected EnemyStatus enemyStatus = EnemyStatus.Patrol;
     
     //Path Finder
@@ -38,7 +41,9 @@ public class EnemyMovement : MonoBehaviour
     private static float td = 9.0f;
     private static float rd;
     private int i;
-    
+
+    private float curTime = 3.0f;
+
     protected enum EnemyStatus
     {
         Idle,
@@ -117,6 +122,11 @@ public class EnemyMovement : MonoBehaviour
             vec2Facing = Vector2.left;
             transform.localScale = new Vector3(faceLeft, transform.localScale.y, transform.localScale.z);
         }
+        
+        if (currentHP <= 0.0f)
+        {
+            StartCoroutine(Die());
+        }
     }
 
     protected void CheckStatus()
@@ -145,7 +155,10 @@ public class EnemyMovement : MonoBehaviour
             
             case EnemyStatus.Attacking:
             {
-                StartCoroutine(Attack());
+                if (canAttack)
+                {
+                    StartCoroutine(Attack());
+                }
             }
                 break;
         }
@@ -165,8 +178,7 @@ public class EnemyMovement : MonoBehaviour
                 m_Animator.SetBool("isRunning", false);
                 m_Animator.SetBool("isWalking", true);
             }
-            
-            if(_body.velocity.x < _ep.enemyMaximumSpeed && _body.velocity.x > -_ep.enemyMaximumSpeed)
+            else if(_body.velocity.x < _ep.enemyMaximumSpeed && _body.velocity.x > -_ep.enemyMaximumSpeed)
             {
                 m_Animator.SetBool("isRunning", true);
                 m_Animator.SetBool("isWalking", false);
@@ -182,9 +194,6 @@ public class EnemyMovement : MonoBehaviour
     
     protected virtual void Patrol()
     {
-        if (canSeePlayer)
-            enemyStatus = EnemyStatus.Targeting;
-        
         float ct = t / td;
         Debug.Log("currentTime: " + ct);
 
@@ -212,7 +221,6 @@ public class EnemyMovement : MonoBehaviour
             }
         }
         
-
         if (_body.velocity.x >= _ep.enemyMinimumSpeed || _body.velocity.x <= -_ep.enemyMinimumSpeed)
         {
             _body.velocity = new Vector2(_ep.enemyMinimumSpeed, _body.velocity.y);
@@ -240,47 +248,69 @@ public class EnemyMovement : MonoBehaviour
     protected virtual void Targeting()
     {
         TargetPlayer();
-        
-        if (Vector2.Distance(targetPos, new Vector2(transform.position.x, transform.position.y)) > 5.0f)
-        {
-            if (!_ep.canFly)
+
+        if (!_ep.canFly)
+        { 
+            if (Vector2.Distance(Vector2.right * targetPos, Vector2.right * transform.position) > 5.0f)
             {
+                print("TARGETING BIRDO");
                 _body.AddForce((targetPos - new Vector2(transform.position.x, transform.position.y)).normalized * 5.0f, ForceMode2D.Force);
-            }
-            else
+            } 
+            
+            if (Vector2.Distance(Vector2.right * targetPos, Vector2.right * transform.position) < 5.0f)
             {
-                _body.AddForce(new Vector2((plr.transform.position - transform.position).normalized.x, 0)* 5.0f, ForceMode2D.Force);
+                _body.velocity = Vector2.zero;
             }
         }
         else
         {
-            _body.velocity = Vector2.zero;
+            if (Vector2.Distance(Vector2.right * targetPos, Vector2.right * transform.position) > 5.0f)
+            {
+                print("TARGETING");
+                _body.AddForce(new Vector2((plr.transform.position - transform.position).normalized.x, 0)* 5.0f, ForceMode2D.Force);
+            }
+
+            if (Vector2.Distance(Vector2.right * targetPos, Vector2.right * transform.position) < 5.0f)
+            {
+                _body.velocity = Vector2.zero;
+            }
+        }
+
+        curTime -= Time.deltaTime;
+        
+        print(curTime + "CURTIME");
+
+        if (_body.velocity.x == 0 && curTime <= 0)
+        {
+            curTime = 20.0f;
             m_Animator.SetBool("isAttacking", true);
+            
+            Debug.Log("Set-Attacking");
             enemyStatus = EnemyStatus.Attacking;
         }
     }
     protected virtual IEnumerator Attack()
     {
+        Debug.Log("ATTACKING");
+        canAttack = false;
+        
         Vector2 dirNormalized = (targetPos - new Vector2(transform.position.x, transform.position.y)).normalized;
 
         if (_ep.canFly)
         {
-            _body.AddForce(dirNormalized * _ep.enemySpeed, ForceMode2D.Force);
+            _body.AddForce(dirNormalized * _ep.enemySpeed * 5, ForceMode2D.Impulse);
         }
         else
         {
-            _body.AddForce(new Vector2(dirNormalized.x * _ep.enemySpeed, 1), ForceMode2D.Impulse);
+            _body.AddForce(new Vector2(dirNormalized.x * _ep.enemySpeed, 1.0f), ForceMode2D.Impulse);
         }
 
-        if (Vector2.Distance(transform.position, targetPos) < 1)
-        {
-            m_Animator.SetBool("isAttacking", false);
-            enemyStatus = EnemyStatus.Patrol;  
-        }
-        
-        
-        
-        yield return null;
+        yield return new WaitForSeconds(2.0f);
+        m_Animator.SetBool("isAttacking", false);
+        enemyStatus = EnemyStatus.Patrol;  
+        print("SHUTUP AND PATROL");
+        print("CAN ATTACK");
+        canAttack = true;
     }
     
     //Methods
@@ -295,11 +325,6 @@ public class EnemyMovement : MonoBehaviour
         {
             currentHP -= 0.8f;
             Destroy(other.gameObject);
-
-            if (currentHP <= 0.0f)
-            {
-                StartCoroutine(Die());
-            }
         }
 
         if (other.gameObject.tag == "Player")
@@ -307,11 +332,17 @@ public class EnemyMovement : MonoBehaviour
             enemyStatus = EnemyStatus.Patrol;
             
             _body.AddForce(-vec2Facing * 6.0f, ForceMode2D.Impulse);
+            currentHP -= 0.41f;
+        }
+
+        if (other.gameObject.tag == "Attack")
+        {
+            _body.AddForce(-vec2Facing * 6.0f, ForceMode2D.Impulse);
             currentHP--;
         }
     }
 
-    private void OnTriggerStay2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.tag == "Player")
         {

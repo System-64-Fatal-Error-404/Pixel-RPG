@@ -5,11 +5,7 @@ public class EnemyProperties : ScriptableObject
 {
     public string enemyName;
 
-    public float enemyHP
-    {
-        get;
-    }
-    
+    public float enemyHP;
     public float enemyAP;
     public float enemySpeed;
     public float enemyMaximumSpeed;
