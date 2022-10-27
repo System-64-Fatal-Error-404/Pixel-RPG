@@ -17,7 +17,7 @@ MonoBehaviour:
   enemyAP: 9
   enemySpeed: 5
   enemyMaximumSpeed: 10
-  enemyMinimumSpeed: 0
+  enemyMinimumSpeed: 2.34
   pov: 80
   range: 14.96
   attackSound: {fileID: 8300000, guid: 8a4d1bb7bbe106542a951bf0ea0df110, type: 3}
