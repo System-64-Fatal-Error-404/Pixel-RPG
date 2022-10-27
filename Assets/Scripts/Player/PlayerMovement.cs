@@ -34,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float sprintSpeed = 10;
     [SerializeField] float addSpeed = 5;
     [SerializeField] Rigidbody2D rock;
+    [SerializeField] Rigidbody2D rockPick;
     [SerializeField] int addDamage = 2;
     [SerializeField] float rockSpeed = 5;
     [SerializeField] float jumpPower = 5;
@@ -251,9 +252,16 @@ public class PlayerMovement : MonoBehaviour
 
         var fireballInst = Instantiate(rock, transform.position, Quaternion.Euler(new Vector2(0, 0)));
         fireballInst.gravityScale = 1.1f;
-        fireballInst.AddForce(new Vector2(vec2Facing.x * rockSpeed * 4, 0), ForceMode2D.Impulse);
+        fireballInst.AddForce(new Vector2(vec2Facing.x * rockSpeed * 4.1f, 0), ForceMode2D.Impulse);
 
         yield return new WaitForSeconds(2);
+        if (fireballInst != null)
+        {
+            var pickUpThrownStone = Instantiate(rockPick, fireballInst.transform.position,
+                Quaternion.Euler(new Vector2(0, 0)));
+            Destroy(fireballInst);
+            
+        }
         hasShot = false;
     }
 

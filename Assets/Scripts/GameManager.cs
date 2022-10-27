@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using TMPro;
 using Random = UnityEngine.Random;
@@ -9,7 +10,10 @@ public class GameManager : MonoBehaviour
     
     [SerializeField] private TextMeshProUGUI _timerText;
     [SerializeField] private float maxDuration;
+    [SerializeField] private GameObject stone;
     private static int plrAmount;
+
+    private float randomTimeDuration;
     
     private float curTime = 0.0f;
     private bool isCounting = false;
@@ -39,6 +43,8 @@ public class GameManager : MonoBehaviour
         {
             _timerText = GameObject.Find("Timer").GetComponent<TextMeshProUGUI>();
         }
+
+        StartCoroutine(RandomTimerCountDown());
     }
 
     private void Update()
@@ -68,5 +74,23 @@ public class GameManager : MonoBehaviour
             curSec = curSec;
         }
         _timerText.text = "Time \n" + (int)(curTime / 60) + " : " + curSec;
+    }
+
+    IEnumerator RandomTimerCountDown()
+    {
+        while (true)
+        {
+            randomTimeDuration -= Time.deltaTime;
+
+            if (randomTimeDuration <= 0)
+            {
+                var stonePickUp = Instantiate(stone, new Vector2(Random.Range(-17.0f, 17.0f), 2.0f),
+                    Quaternion.Euler(Vector3.zero));
+                randomTimeDuration = Random.Range(0.8f, 5.0f);
+                yield return null;
+            }
+
+            yield return null;
+        }
     }
 }

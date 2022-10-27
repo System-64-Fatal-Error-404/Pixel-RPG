@@ -1384,6 +1384,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _timerText: {fileID: 787885477}
   maxDuration: 0
+  stone: {fileID: 2639113996855114009, guid: 9235bda53c694a74fa70fb87339dbceb, type: 3}
 --- !u!4 &865024168
 Transform:
   m_ObjectHideFlags: 0
