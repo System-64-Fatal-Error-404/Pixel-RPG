@@ -8,6 +8,8 @@ TagManager:
   - Floor
   - Bullet
   - Item
+  - PowerUp
+  - Rock Item
   layers:
   - Default
   - TransparentFX

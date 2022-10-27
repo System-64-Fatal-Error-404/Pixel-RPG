@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public class MainMenu : MonoBehaviour
 {
@@ -13,9 +14,27 @@ public class MainMenu : MonoBehaviour
     //Sends the player to the game scene
     public void PlayGame()
     {
-        SceneManager.LoadScene("Jaguar");
+        SceneManager.LoadScene("MainGame (Do Not Touch)");
         
         newGame = true;
+    }
+
+    public void PlaySelected()
+    {
+        if (text.text == "Jaguar")
+        {
+            GotoJaguar();
+        }
+        
+        if (text.text == "Eagle")
+        {
+            GoToEagle();
+        }
+        
+        if (text.text == "Custom Level")
+        {
+            PlayGame();
+        }
     }
 
   //  public void Tutorial() // If we have a tutorial I can re-add this
@@ -38,6 +57,11 @@ public class MainMenu : MonoBehaviour
     public void GoToEagle()
     {
         SceneManager.LoadScene("Eagle");
+    }
+
+    public void GotoJaguar()
+    {
+        SceneManager.LoadScene("Jaguar");
     }
 }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -224,8 +225,11 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(DamageUp());
             Destroy(other.gameObject);
         }
+    }
 
-        if (other.gameObject.name == "Rock Item")
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.tag == "Rock Item")
         {
             rockCount++;
 
