@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4336584064486666523}
   - component: {fileID: 4336584064486666521}
   - component: {fileID: 2339775212373194528}
+  - component: {fileID: 2010110639593523003}
   m_Layer: 0
   m_Name: Rock Item
   m_TagString: Rock Item
@@ -97,12 +98,12 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.0039809644, y: 0.0039809644}
   serializedVersion: 2
-  m_Radius: 0.12
+  m_Radius: 0.09611416
 --- !u!95 &4336584064486666521
 Animator:
   serializedVersion: 4
@@ -144,3 +145,19 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!58 &2010110639593523003
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2639113996855114009}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.16

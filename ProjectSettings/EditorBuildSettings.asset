@@ -9,9 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Main Title.unity
     guid: 725f06a130cb73543b62b6817ef23cac
   - enabled: 1
-    path: Assets/Scenes/Jaguar.unity
-    guid: 1510480decb34b241b2db3f0b96ae7e2
-  - enabled: 1
     path: Assets/Scenes/WinGame.unity
     guid: 96eb347424091604f8004c4c9cce8eb5
   - enabled: 1
@@ -20,4 +17,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Eagle.unity
     guid: c48de46fd10c61e4d8acede4b73cc316
+  - enabled: 1
+    path: Assets/Scenes/Jaguar.unity
+    guid: 1510480decb34b241b2db3f0b96ae7e2
+  - enabled: 1
+    path: Assets/Scenes/MainGame (Do Not Touch).unity
+    guid: e04e1ebed48d3dd4f8e2cc1d9cb4927b
   m_configObjects: {}
