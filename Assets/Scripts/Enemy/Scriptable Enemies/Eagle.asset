@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Eagle
   m_EditorClassIdentifier: 
   enemyName: Eagle
+  enemyHP: 15
   enemyAP: 9
   enemySpeed: 5
   enemyMaximumSpeed: 10
   enemyMinimumSpeed: 0
   pov: 80
   range: 14.96
-  attackSound: {fileID: 0}
+  attackSound: {fileID: 8300000, guid: 8a4d1bb7bbe106542a951bf0ea0df110, type: 3}
   canFly: 1

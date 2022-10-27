@@ -122,6 +122,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2761a37c8d089c441ae42e8463eb16a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  APowerUp: {fileID: 8300000, guid: f1886c0a5cb281a4fb5300bd1b7d979f, type: 3}
+  AJump: {fileID: 8300000, guid: 0eba3c90d6fb8c54e93ce9133addb154, type: 3}
+  ALand: {fileID: 8300000, guid: 5ec6f1cfe6b32e6488580e9baa17365b, type: 3}
+  AScratch: {fileID: 8300000, guid: 1726badf775aa5c458fe2236f6f77fdb, type: 3}
+  ADeath: {fileID: 8300000, guid: 43fd8a0821aef3d49a9e6834db1b2735, type: 3}
+  AThrow: {fileID: 8300000, guid: caa9b873db1e758459f6d23717e04954, type: 3}
   Rocks: {fileID: 0}
   moveAction:
     m_Name: Move

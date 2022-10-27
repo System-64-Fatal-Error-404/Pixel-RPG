@@ -21,8 +21,9 @@ public class EnemyMovement : MonoBehaviour
 
     protected Animator m_Animator;
     protected Rigidbody2D _body;
-    public float currentHP;
+    private float currentHP;
     public float attackPower;
+    private AudioClip AttackSound;
     
     [SerializeField] private GameObject plr;
     private Vector2 targetPos;
@@ -61,6 +62,7 @@ public class EnemyMovement : MonoBehaviour
         plrPos = plr.transform.position;
         currentHP = _ep.enemyHP;
         attackPower = _ep.enemyAP;
+        AttackSound = _ep.attackSound;
         
         Debug.Log("current Eagle HP: " + currentHP);
         
@@ -121,11 +123,6 @@ public class EnemyMovement : MonoBehaviour
             }
             vec2Facing = Vector2.left;
             transform.localScale = new Vector3(faceLeft, transform.localScale.y, transform.localScale.z);
-        }
-        
-        if (currentHP <= 0.0f)
-        {
-            StartCoroutine(Die());
         }
     }
 
@@ -283,8 +280,7 @@ public class EnemyMovement : MonoBehaviour
         if (_body.velocity.x == 0 && curTime <= 0)
         {
             curTime = 20.0f;
-            m_Animator.SetBool("isAttacking", true);
-            
+
             Debug.Log("Set-Attacking");
             enemyStatus = EnemyStatus.Attacking;
         }
@@ -292,6 +288,8 @@ public class EnemyMovement : MonoBehaviour
     protected virtual IEnumerator Attack()
     {
         Debug.Log("ATTACKING");
+        m_Animator.SetBool("isAttacking", true);
+        
         canAttack = false;
         
         Vector2 dirNormalized = (targetPos - new Vector2(transform.position.x, transform.position.y)).normalized;
@@ -299,10 +297,12 @@ public class EnemyMovement : MonoBehaviour
         if (_ep.canFly)
         {
             _body.AddForce(dirNormalized * _ep.enemySpeed * 5, ForceMode2D.Impulse);
+            AudioSource.PlayClipAtPoint(AttackSound, transform.position);
         }
         else
         {
             _body.AddForce(new Vector2(dirNormalized.x * _ep.enemySpeed, 1.0f), ForceMode2D.Impulse);
+            AudioSource.PlayClipAtPoint(AttackSound, transform.position);
         }
 
         yield return new WaitForSeconds(2.0f);
@@ -325,6 +325,11 @@ public class EnemyMovement : MonoBehaviour
         {
             currentHP -= 0.8f;
             Destroy(other.gameObject);
+            
+            if (currentHP < 0.0f)
+            {
+                StartCoroutine(Die());
+            }
         }
 
         if (other.gameObject.tag == "Player")

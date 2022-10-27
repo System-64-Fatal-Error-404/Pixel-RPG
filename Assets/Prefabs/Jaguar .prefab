@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2752286956971539861}
   - component: {fileID: 2752286956971539862}
   - component: {fileID: 2752286956971539859}
+  - component: {fileID: 2752286956484183633}
   m_Layer: 0
   m_Name: 'Jaguar '
   m_TagString: Untagged
@@ -151,7 +152,6 @@ MonoBehaviour:
   obstructLayer:
     serializedVersion: 2
     m_Bits: 256
-  currentHP: 0
   attackPower: 0
   plr: {fileID: 0}
   enemyStatus: 1
@@ -181,3 +181,19 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.35059083, y: 0.26}
   m_EdgeRadius: 0
+--- !u!58 &2752286956484183633
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2752286956971539865}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.5640531, y: -0.18932192}
+  serializedVersion: 2
+  m_Radius: 0.7370106

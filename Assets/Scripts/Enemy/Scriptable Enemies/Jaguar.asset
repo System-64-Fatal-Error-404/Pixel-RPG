@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Jaguar
   m_EditorClassIdentifier: 
   enemyName: Jaguar
+  enemyHP: 20
   enemyAP: 4
   enemySpeed: 12
   enemyMaximumSpeed: 20
   enemyMinimumSpeed: 11
   pov: 60
   range: 19.08
-  attackSound: {fileID: 0}
+  attackSound: {fileID: 8300000, guid: 33353a1df6e7a9a4492aacf49fd75667, type: 3}
   canFly: 0
