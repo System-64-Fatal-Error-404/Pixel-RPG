@@ -296,7 +296,7 @@ public class EnemyMovement : MonoBehaviour
 
         if (_ep.canFly)
         {
-            _body.AddForce(dirNormalized * _ep.enemySpeed * 5, ForceMode2D.Impulse);
+            _body.AddForce(dirNormalized * _ep.enemySpeed * 6, ForceMode2D.Impulse);
             AudioSource.PlayClipAtPoint(AttackSound, transform.position);
         }
         else
@@ -305,11 +305,10 @@ public class EnemyMovement : MonoBehaviour
             AudioSource.PlayClipAtPoint(AttackSound, transform.position);
         }
 
-        yield return new WaitForSeconds(2.0f);
+        yield return new WaitForSeconds(2.5f);
         m_Animator.SetBool("isAttacking", false);
         enemyStatus = EnemyStatus.Patrol;  
         print("SHUTUP AND PATROL");
-        print("CAN ATTACK");
         canAttack = true;
     }
     

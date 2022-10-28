@@ -232,7 +232,6 @@ public class PlayerMovement : MonoBehaviour
         if (other.gameObject.tag == "Rock Item")
         {
             rockCount++;
-
             Destroy(other.gameObject);
         }
     }
@@ -259,14 +258,16 @@ public class PlayerMovement : MonoBehaviour
         fireballInst.AddForce(new Vector2(vec2Facing.x * rockSpeed * 4.1f, 0), ForceMode2D.Impulse);
 
         yield return new WaitForSeconds(2);
+        hasShot = !hasShot;
         if (fireballInst != null)
         {
             var pickUpThrownStone = Instantiate(rockPick, fireballInst.transform.position,
                 Quaternion.Euler(new Vector2(0, 0)));
-            Destroy(fireballInst);
             
+            pickUpThrownStone.AddForce(Vector2.up * 0.5f, ForceMode2D.Impulse);
+            Destroy(fireballInst);
+            yield return null;
         }
-        hasShot = false;
     }
 
     IEnumerator SpeedUp()

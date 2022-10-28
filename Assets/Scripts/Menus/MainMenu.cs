@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 public class MainMenu : MonoBehaviour
 {
     public bool newGame;
-    [SerializeField] private TextMeshProUGUI text;
+    public TextMeshProUGUI text;
 
     //Sends the player to the game scene
     public void PlayGame()
